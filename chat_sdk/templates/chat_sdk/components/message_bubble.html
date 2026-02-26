@@ -1,0 +1,74 @@
+{% load chat_sdk_tags markdownify %}
+
+{% if message.role == "user" %}
+<div class="message-bubble user-message">
+  <div class="d-flex align-items-start gap-2 justify-content-end">
+    <div class="card shadow-none bg-primary-subtle border-0">
+      <div class="card-body py-2 px-3">
+        <div class="message-content text-primary">{{ message|message_text }}</div>
+        {% if message.attachments %}
+        <div class="mt-2">
+          {% for att in message.attachments %}
+          <span class="badge bg-primary-subtle text-primary border me-1">
+            <span data-feather="paperclip" style="width:12px;height:12px;"></span>
+            {{ att.name|default:"attachment" }}
+          </span>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+    </div>
+    <div class="avatar avatar-s rounded-circle bg-primary d-flex align-items-center justify-content-center flex-shrink-0">
+      <span data-feather="user" class="text-white" style="width:16px;height:16px;"></span>
+    </div>
+  </div>
+</div>
+
+{% elif message.role == "assistant" %}
+<div class="message-bubble assistant-message">
+  <div class="d-flex align-items-start gap-2">
+    <div class="avatar avatar-s rounded-circle bg-body-tertiary d-flex align-items-center justify-content-center flex-shrink-0">
+      <span data-feather="cpu" class="text-primary" style="width:16px;height:16px;"></span>
+    </div>
+    <div>
+      <div class="card shadow-none border">
+        <div class="card-body py-2 px-3">
+          <div class="message-content">{{ message|message_text|markdownify }}</div>
+        </div>
+      </div>
+
+      {% if message|has_tool_calls %}
+      {% for tc in message.get_tool_calls %}
+      {% include "chat_sdk/components/tool_result.html" with tool_call=tc %}
+      {% endfor %}
+      {% endif %}
+
+      <!-- Vote buttons -->
+      <div class="d-flex gap-1 mt-1">
+        <button class="btn btn-sm btn-link text-body-tertiary p-0"
+                hx-post="{% url 'chat_sdk:htmx_vote' message.id %}?is_upvoted=true"
+                hx-target="this"
+                hx-swap="outerHTML"
+                title="Helpful">
+          <span data-feather="thumbs-up" style="width:14px;height:14px;"></span>
+        </button>
+        <button class="btn btn-sm btn-link text-body-tertiary p-0"
+                hx-post="{% url 'chat_sdk:htmx_vote' message.id %}?is_upvoted=false"
+                hx-target="this"
+                hx-swap="outerHTML"
+                title="Not helpful">
+          <span data-feather="thumbs-down" style="width:14px;height:14px;"></span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% elif message.role == "system" %}
+<div class="message-bubble text-center">
+  <small class="text-body-tertiary fst-italic">
+    <span data-feather="info" style="width:12px;height:12px;"></span>
+    {{ message|message_text }}
+  </small>
+</div>
+{% endif %}

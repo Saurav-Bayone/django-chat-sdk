@@ -1,0 +1,47 @@
+<!-- Artifacts offcanvas panel (right side) -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="artifactsPanel"
+     style="width: 500px;">
+  <div class="offcanvas-header border-bottom">
+    <h6 class="offcanvas-title">
+      <span data-feather="file-text" style="width:16px;height:16px;" class="me-1"></span>
+      Artifacts
+    </h6>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+  </div>
+  <div class="offcanvas-body p-0">
+    {% if conversation %}
+    {% for artifact in conversation.artifacts.all %}
+    <div class="border-bottom p-3">
+      <div class="d-flex justify-content-between align-items-start mb-2">
+        <div>
+          <h6 class="mb-0 fw-semibold">{{ artifact.title }}</h6>
+          <small class="text-body-tertiary">
+            {{ artifact.get_kind_display }} &middot; {{ artifact.created_at|timesince }} ago
+          </small>
+        </div>
+        <span class="badge bg-body-tertiary text-body-secondary">
+          {{ artifact.kind }}
+        </span>
+      </div>
+
+      {% if artifact.kind == "code" %}
+      <pre class="bg-body-tertiary p-3 rounded small"><code>{{ artifact.content }}</code></pre>
+      {% elif artifact.kind == "markdown" %}
+      <div class="border rounded p-3">
+        {{ artifact.content|markdownify }}
+      </div>
+      {% else %}
+      <div class="border rounded p-3">
+        {{ artifact.content|linebreaksbr }}
+      </div>
+      {% endif %}
+    </div>
+    {% empty %}
+    <div class="text-center text-body-tertiary py-5">
+      <span data-feather="inbox" style="width:32px;height:32px;" class="mb-2"></span>
+      <p class="mb-0">No artifacts yet</p>
+    </div>
+    {% endfor %}
+    {% endif %}
+  </div>
+</div>

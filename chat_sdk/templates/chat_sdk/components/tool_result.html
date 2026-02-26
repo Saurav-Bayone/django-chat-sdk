@@ -1,0 +1,20 @@
+<div class="tool-call-card card shadow-none border mt-2">
+  <div class="card-body py-2 px-3">
+    <div class="d-flex align-items-center gap-2 mb-1"
+         data-bs-toggle="collapse"
+         data-bs-target="#tool-detail-{{ tool_call.tool_call_id }}"
+         style="cursor: pointer;">
+      <span data-feather="tool" style="width:14px;height:14px;" class="text-info"></span>
+      <small class="fw-semibold text-info">{{ tool_call.tool_name }}</small>
+      <span data-feather="chevron-down" style="width:12px;height:12px;" class="text-body-tertiary ms-auto"></span>
+    </div>
+    <div class="collapse" id="tool-detail-{{ tool_call.tool_call_id }}">
+      {% if tool_call.args %}
+      <div class="mb-1">
+        <small class="text-body-tertiary">Input:</small>
+        <pre class="mb-0 small bg-body-tertiary p-2 rounded">{{ tool_call.args }}</pre>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>

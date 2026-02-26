@@ -1,0 +1,43 @@
+{% load chat_sdk_tags %}
+
+<div class="p-3">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h6 class="mb-0 fw-semibold">Conversations</h6>
+    <button class="btn btn-sm btn-phoenix-primary"
+            hx-post="{% url 'chat_sdk:htmx_new_conversation' %}"
+            hx-target="#chat-sidebar"
+            hx-swap="innerHTML">
+      <span data-feather="plus" style="width:14px;height:14px;"></span>
+    </button>
+  </div>
+
+  <div class="list-group list-group-flush">
+    {% for conv in conversations %}
+    <a href="{% url 'chat_sdk:chat_with_conversation' conv.id %}"
+       class="list-group-item list-group-item-action sidebar-item py-2 px-2 border-0 rounded
+              {% if conversation and conversation.id == conv.id %}active{% endif %}"
+       data-conversation-id="{{ conv.id }}">
+      <div class="d-flex justify-content-between align-items-start">
+        <div class="me-2 min-w-0">
+          <div class="fw-semibold text-truncate small">{{ conv.title }}</div>
+          <div class="text-body-tertiary" style="font-size: 0.75rem;">
+            {{ conv.updated_at|timesince }} ago
+          </div>
+        </div>
+        <button class="btn btn-sm btn-link text-body-tertiary p-0 flex-shrink-0"
+                hx-post="{% url 'chat_sdk:htmx_delete_conversation' conv.id %}"
+                hx-target="#chat-sidebar"
+                hx-swap="innerHTML"
+                hx-confirm="Delete this conversation?"
+                onclick="event.stopPropagation(); event.preventDefault();">
+          <span data-feather="trash-2" style="width:12px;height:12px;"></span>
+        </button>
+      </div>
+    </a>
+    {% empty %}
+    <div class="text-center text-body-tertiary py-4">
+      <small>No conversations yet</small>
+    </div>
+    {% endfor %}
+  </div>
+</div>

@@ -1,0 +1,11 @@
+{% load chat_sdk_tags %}
+
+{% for message in messages %}
+  {% include "chat_sdk/components/message_bubble.html" %}
+{% empty %}
+  {% if conversation %}
+  <div class="text-center text-body-tertiary mt-4">
+    <small>No messages yet. Start the conversation!</small>
+  </div>
+  {% endif %}
+{% endfor %}
